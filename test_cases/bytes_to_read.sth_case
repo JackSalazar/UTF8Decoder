@@ -7,10 +7,10 @@ ENTRY=bytes_to_read
 ARGS="0"
 EXIT_STATUS=1
 
-[case]
-ARGS= 
-EXIT_STATUS= 
-
-[case]
-ARGS=  
-EXIT_STATUS=
+#[case]
+#ARGS=
+#EXIT_STATUS=
+#
+#[case]
+#ARGS= 
+#EXIT_STATUS=
