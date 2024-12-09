@@ -24,7 +24,7 @@
 //   - print v as a hexadecimal value
 
 
-static char [] buffer = new char[3];
+//static char [] buffer = new char[3];
 
 // TO DO: CHANGE BYTES_TO_READ TO READ THE ENCODED VERSION OF V_1. FROM THERE, READ ALL REMAINING BYTES THEN MOVE ON TO DECODE ALL OF THEM INSIDE THE BIG LOOP. TWO LOOPS INSIDE EACH OTHER. ONE LOOP TO DECODE THE FIRST UTF, THEN ANOTHER LOOP TO RESTART THE CYCLE AND READ IF THERE'S MORE UTF TO READ
 
@@ -36,20 +36,72 @@ public static int decode(){
    int test = 0;
 beginning:    ;
 
+   //mips.read_s(buffer, 2);
+
+
 entireLoop:   while (i != -1){
    int bytes2read = 0;
-   System.out.println("Buffer contents: " + java.util.Arrays.toString(buffer));
+   int v_1;
+   //System.out.println("Buffer contents: " + java.util.Arrays.toString(buffer));
+   mips.read_x();
+   v_1 = mips.retval();
 
-   //bytes2read = bytes_to_read(decodedv1); //checks number of bytes to read
-    
-   int digit = glyph2int(buffer[0], 16); // buffer[0] is the location to read from, while 16 is the radix (base 16) 
+   if (v_1 == -1) {
+      System.out.println("End of program");
+      return count;
+   }
+   //System.out.println("v_1 is " + v_1);
+   //v_1 = glyph2int(buffer[0], 16); // buffer[0] is the location to read from, while 16 is the radix (base 16) 
    //NOTE: This must be done because it allows you do properly use << and >> respectively. Without it, the letters take on their ascii value, not their true hex value
+   //v_1 = v_1 << 4;
+   //v_1 = v_1 + glyph2int(buffer[1], 16);
+   //System.out.println("v_1 is " + v_1);
+   
+   bytes2read = bytes_to_read(v_1); //checks number of bytes to read
+   //System.out.println("bytes2read is " + bytes2read);
+   if (bytes2read == 2){
+      v_1 = v_1 & 0x1F;
+      //System.out.println("v_1 is now " + v_1 +" because the first 3 bits were removed");
+   }
+   if (bytes2read == 3){
+      v_1 = v_1 & 0x0F;
+      //System.out.println("v_1 is now " + v_1 +" because the first 4 bits were removed");
+   }
+   if (bytes2read == 4){
+      v_1 = v_1 & 0x07;
+      //System.out.println("v_1 is now " + v_1 +" because the first 5 bits were removed");
+   }
+   //At this point, v_1 has been decoded
+
+   int decodedValue = v_1;
+   //System.out.println("The following is mips.print_x");
+   //mips.print_x(v_1);
+   //System.out.println("End of mips.print_x");
+
+   for (int j = 1; j < bytes2read; j++){ //The plan is to just add to v_0 as time goes on, allowing for redundancy
+     //System.out.println("byte " + j + " is now being read");
+     mips.read_x();
+     int v_cont = mips.retval();
+     if (isContinuation(v_cont) == 1){
+      v_cont = v_cont & 0x3F;
+      decodedValue = decodedValue << 6;
+      decodedValue = decodedValue + v_cont;
+     } else {
+      return -1;
+     }
+
+   }
+   //ystem.out.println("The decodedValue is " + decodedValue);
+   mips.print_x(decodedValue); 
+   mips.print_c('\n');
+   count = count + 1;
+   
 
    //System.out.println(digit);
    // 1101 to 11010
 next:   
    i++;
-   mips.read_s(buffer, 2);
+   //mips.read_s(buffer, 2);
    }
 
    //String v_1 = 
@@ -74,17 +126,17 @@ public static int bytes_to_read(int v){
 //
 //      - see Slide 21 from introduction-to-encodings.pdf
 	if (v >= 0x0000){
-      if (v <= 0x7F){ //(0111 1111) should be //(0111 1111)
+      if (v <= 0x7F){ //(0111 1111) for  decoded it should be 0111 1111 (0x7F)
          return 1;
       }
-      if (v <= 0x7FF){ // (0111 1111 1111) should be 1101 1111 1011 1111
-                       // 111 1111 1111
+      if (v <= 0xDF){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)
+                       
          return 2;
       }
-      if (v <=0xFFFF){ // (1111 1111 1111 1111)
+      if (v <=0xEF){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
          return 3;
       }
-      if (v<= 0x10FFFF){
+      if (v<= 0xF7){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
          return 4;
       }
    }

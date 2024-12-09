@@ -9,17 +9,17 @@ EXIT_STATUS=1
 
 #4 more required
 [case]
-ARGS=""
-EXIT_STATUS=
+ARGS="0xC6"
+EXIT_STATUS=2
 
 [case]
-ARGS="0x" 
-EXIT_STATUS=
+ARGS="0xE3" 
+EXIT_STATUS=3
 
 [case]
-ARGS="0x"
-EXIT_STATUS=
+ARGS="0xF7"
+EXIT_STATUS=4
 
 [case]
-ARGS="0x"
+ARGS="0xFF"
 EXIT_STATUS=255
