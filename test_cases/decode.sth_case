@@ -8,9 +8,10 @@ INPUT="../test_cases/list_1.txt"
 OUTPUT="2727"
 EXIT_STATUS=1
 
+#4 more required
 [case]
 INPUT="../test_cases/list_2.txt"
-OUTPUT=../test_cases/list_2.output"
+OUTPUT="../test_cases/list_2.output"
 EXIT_STATUS=4
 
 [case]

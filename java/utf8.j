@@ -28,6 +28,12 @@
 public static int decode(){
 //      - the pseudo for this method is provided above
 //      - it returns the number of UTF-8 characters decoded
+   
+
+
+
+
+	return 123456; //modify this laterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 }
 
 public static int bytes_to_read(int v){
@@ -43,6 +49,23 @@ public static int bytes_to_read(int v){
 //        | otherwise               |    -1     |  
 //
 //      - see Slide 21 from introduction-to-encodings.pdf
+	if (v >= 0x0000){
+      if (v <= 0x7F){ //(0111 1111) should be //(0111 1111)
+         return 1;
+      }
+      if (v <= 0x7FF){ // (0111 1111 1111) should be 1101 1111 1011 1111
+                       // 111 1111 1111
+         return 2;
+      }
+      if (v <=0xFFFF){ // (1111 1111 1111 1111)
+         return 3;
+      }
+      if (v<= 0x10FFFF){
+         return 4;
+      }
+   }
+
+   return -1; 
 }
 
 //public static int isContinuation(int v){
@@ -56,13 +79,13 @@ public static int bytes_to_read(int v){
 
             int retval;
          
-            retval = -1;
+            retval = 0; //modified so 0 is false
             // eliminate the data bits from value
             value = value & 0xC0;  // 0xC0 == 0b1100 0000
 
             // ensure the frame bits are "10"
             if (value == 0x80) {   // 0x80 == 0b1000 0000
-             retval = 0;
+             retval = 1; //modified so 1 is true
             }
             return retval;
 }

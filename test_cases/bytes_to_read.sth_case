@@ -1,16 +1,25 @@
 [default]
 DRIVER=java_subroutine
-OPTIONS="-L ."
+OPTIONS="-R null -L ."
 ENTRY=bytes_to_read
 
 [case]
 ARGS="0"
 EXIT_STATUS=1
 
-#[case]
-#ARGS=
-#EXIT_STATUS=
-#
-#[case]
-#ARGS= 
-#EXIT_STATUS=
+#4 more required
+[case]
+ARGS="0x5AB"
+EXIT_STATUS=2
+
+[case]
+ARGS="0xCA75" 
+EXIT_STATUS=3
+
+[case]
+ARGS="0x54321"
+EXIT_STATUS=4
+
+[case]
+ARGS="0xABCDEF"
+EXIT_STATUS=255
