@@ -98,26 +98,31 @@ bytes_to_read:                        #public static int bytes_to_read(int v){
          .eqv maskThree, 0xEF               #   final int maskthree = 0xEF;
          .eqv maskFour, 0xF4               #   final int maskfour = 0xF4;
                         #
-if6:	   blt                #   if (v >= 0x0000){
-if7:                    #      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
-                        #         return 1;
+if6:	   blt $a0, $zero, done6               #   if (v >= 0x0000){
+if7:     blt $a0, maskOne, done7               #      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
+            li $v0, 1            #         return 1;
+            jr $ra
                         #      }
 done7:                  #        ;
-if8:                    #      if (v <= masktwo){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
-                        #         return 2;
+if8:     blt $a0, maskTwo, done8               #      if (v <= masktwo){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
+            li $v0, 2            #         return 2;
+            jr $ra
                         #      }
 done8:                  #        ;
-if9:                    #      if (v <=maskthree){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
-                        #         return 3;
+if9:     blt $a0, maskThree, done9                #      if (v <=maskthree){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
+            li $v0, 3            #         return 3;
+            jr $ra
                         #      }
 done9:                  #        ;
-if10:                   #      if (v<= maskfour){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
-                        #         return 4;
+if10:    blt $a0, maskFour, done10               #      if (v<= maskfour){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
+            li $v0, 4            #         return 4;
+            jr $ra
                         #      }
 done10:                 #         ;
                         #   }
 done6:                  #   ;
-                        #   return -1; 
+         li $v0, -1               #   return -1; 
+         jr $ra
                         #}
                         #
                         #
