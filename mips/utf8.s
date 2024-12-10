@@ -1,13 +1,30 @@
+.text
+.globl decode
+.globl bytes_to_read
+.globl isContinuation
+.include "include/stack.s"
+.include "include/syscalls.s"
+.include "include/subroutine.s"
+
+
                                     #
-                                    #public static int decode(){
+decode:                                    #public static int decode(){
+         #Bookkeeping pt.1
+         #v0
+         #v1
+         #a0
+         #a1
+         #a2
+         #a3
+         #a4
                                     #
-                                    #   int count ;
-                                    #   int i ;
-                                    #   int bytes2read;
-                                    #   int v_1;
-                                    #   int decodedValue;
-                                    #   int j;
-                                    #   int v_cont;
+         #t1: count                           #   int count ;
+         #t2: i                           #   int i ;
+         #t3: bytes2read                           #   int bytes2read;
+         #t4: v_1                           #   int v_1;
+         #t5: decodedValue                           #   int decodedValue;
+         #t6: j                           #   int j;
+         #t7: v_cont                           #   int v_cont;
                                     #
                                     #   count = 0;
                                     #   i = 0;
@@ -73,13 +90,15 @@ next2:                              #        ;
                                     #   }
                                     #}
 
-                        #public static int bytes_to_read(int v){
-                        #   final int maskone = 0x7F;
-                        #   final int masktwo = 0xDF;
-                        #   final int maskthree = 0xEF;
-                        #   final int maskfour = 0xF4;
+bytes_to_read:                        #public static int bytes_to_read(int v){
+   #Bookkeeping Pt.2
+   #a0: v
+         .eqv maskOne, 0x7F               #   final int maskone = 0x7F;
+         .eqv maskTwo, 0xDF               #   final int masktwo = 0xDF;
+         .eqv maskThree, 0xEF               #   final int maskthree = 0xEF;
+         .eqv maskFour, 0xF4               #   final int maskfour = 0xF4;
                         #
-if6:	                  #   if (v >= 0x0000){
+if6:	   blt                #   if (v >= 0x0000){
 if7:                    #      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
                         #         return 1;
                         #      }
@@ -103,18 +122,21 @@ done6:                  #   ;
                         #
                         #
                         #
-                        #public static int isContinuation(int value) {
-                        #   int retval;
+isContinuation:                        #public static int isContinuation(int value) {
+         #Bookkeeping Pt.3
+         #a0: value
+         #t8: retval               #   int retval;
                         #
-                        #   final int encodeMask = 0xC0;
-                        #   final int valueMask = 0x80;
+         .eqv encodeMask, 0xC0               #   final int encodeMask = 0xC0;
+         .eqv valueMask, 0x80               #   final int valueMask = 0x80;
                         #
-                        #   retval = 0; //modified so 0 is false
-                        #   value = value & encodeMask;  // 0xC0 == 0b1100 0000
+         move $t8, $zero               #   retval = 0; //modified so 0 is false
+         and $a0, $a0, encodeMask                #   value = value & encodeMask;  // 0xC0 == 0b1100 0000
                         #
-if11:                   #   if (value == valueMask) {   // 0x80 == 0b1000 0000
-                        #      retval = 1; //modified so 1 is true
+if11:    bne $a0, valueMask, done11               #   if (value == valueMask) {   // 0x80 == 0b1000 0000
+         li $t8, 1               #      retval = 1; //modified so 1 is true
                         #   }
 done11:                 #   ;
-                        #   return retval;
+         move $v0, $t8               #   return retval;
+         jr $ra
                         #}
