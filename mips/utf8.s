@@ -26,16 +26,16 @@ decode:                                    #public static int decode(){
          #t6: j                           #   int j;
          #t7: v_cont                           #   int v_cont;
                                     #
-                                    #   count = 0;
-                                    #   i = 0;
-                                    #   bytes2read = 0;
+         move $t1, $zero                           #   count = 0;
+         move $t2, $zero                          #   i = 0;
+         move $3, $zero                           #   bytes2read = 0;
                                     #
-                                    #   final int byte2mask = 0x1F;
-                                    #   final int byte3mask = 0x0F;
-                                    #   final int byte4mask = 0x07;
-                                    #   final int bytecontmask = 0x3F;
-                                    #   final int decodedValueShift = 6;
-                                    #   final int negOne = -1;
+         .eqv byte2mask, 0x1F                           #   final int byte2mask = 0x1F;
+         .eqv byte3mask, 0x0F                           #   final int byte3mask = 0x0F;
+         .eqv byte4mask, 0x07                           #   final int byte4mask = 0x07;
+         .eqv bytecontmask, 0x3F                           #   final int bytecontmask = 0x3F;
+         .eqv decodedValueShift, 6                           #   final int decodedValueShift = 6;
+         #.eqv                           #   final int negOne = -1;
                                     #   
 nextUTFDecode:                      #   while (true){
                                     #   
@@ -121,7 +121,7 @@ if10:       bgt $a0, maskFour, done10               #      if (v<= maskfour){ //
 done10:     nop               #         ;
                            #   }
 done6:   nop                  #   ;
-         li $v0, 255               #   return -1; 
+         li $v0, -1               #   return -1; 
          jr $ra
                         #}
                         #
