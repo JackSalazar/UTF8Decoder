@@ -1,9 +1,17 @@
 
 public static int decode(){
 
-   int count = 0;
-   int i = 0;
-   int test = 0;
+   int count ;
+   int i ;
+   int bytes2read;
+   int v_1;
+   int decodedValue;
+   int j;
+   int v_cont;
+
+   count = 0;
+   i = 0;
+   bytes2read = 0;
 
    final int byte2mask = 0x1F;
    final int byte3mask = 0x0F;
@@ -13,8 +21,7 @@ public static int decode(){
    final int negOne = -1;
 
 nextUTFDecode:   while (true){
-      int bytes2read = 0;
-      int v_1;
+
    
       mips.read_x();
       v_1 = mips.retval();
@@ -39,12 +46,12 @@ if4:      if (bytes2read == 4){
 done4:  ;
       //At this point, v_1 has been decoded
    
-      int decodedValue = v_1;
-      int j = 1;
+    decodedValue = v_1;
+    j = 1;
 
 nextContBitDecode:      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
          mips.read_x();
-         int v_cont = mips.retval();
+         v_cont = mips.retval();
 if5:         if (isContinuation(v_cont) == 1){
             v_cont = v_cont & bytecontmask;
             decodedValue = decodedValue << decodedValueShift;
