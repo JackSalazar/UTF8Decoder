@@ -5,6 +5,12 @@ public static int decode(){
    int i = 0;
    int test = 0;
 
+   final int byte2mask = 0x1F;
+   final int byte3mask = 0x0F;
+   final int byte4mask = 0x07;
+   final int bytecontmask = 0x3F;
+   final int decodedValueShift = 6;
+
    while (true){
       int bytes2read = 0;
       int v_1;
@@ -19,13 +25,13 @@ public static int decode(){
       bytes2read = bytes_to_read(v_1); //checks number of bytes to read
    
       if (bytes2read == 2){
-         v_1 = v_1 & 0x1F;
+         v_1 = v_1 & byte2mask;
       }   
       if (bytes2read == 3){
-         v_1 = v_1 & 0x0F;
+         v_1 = v_1 & byte3mask;
       }
       if (bytes2read == 4){
-         v_1 = v_1 & 0x07;
+         v_1 = v_1 & byte4mask;
       }
       //At this point, v_1 has been decoded
    
@@ -35,8 +41,8 @@ public static int decode(){
          mips.read_x();
          int v_cont = mips.retval();
          if (isContinuation(v_cont) == 1){
-            v_cont = v_cont & 0x3F;
-            decodedValue = decodedValue << 6;
+            v_cont = v_cont & bytecontmask;
+            decodedValue = decodedValue << decodedValueShift;
             decodedValue = decodedValue + v_cont;
          } else {
             return -1;
@@ -52,18 +58,22 @@ public static int decode(){
 }
 
 public static int bytes_to_read(int v){
+   final int maskone = 0x7F;
+   final int masktwo = 0xDF;
+   final int maskthree = 0xEF;
+   final int maskfour = 0xF4;
 
 	if (v >= 0x0000){
-      if (v <= 0x7F){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
+      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
          return 1;
       }
-      if (v <= 0xDF){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
+      if (v <= masktwo){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
          return 2;
       }
-      if (v <=0xEF){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
+      if (v <=maskthree){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
          return 3;
       }
-      if (v<= 0xF4){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
+      if (v<= maskfour){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
          return 4;
       }
    }
@@ -75,10 +85,13 @@ public static int bytes_to_read(int v){
 public static int isContinuation(int value) {
    int retval;
 
-   retval = 0; //modified so 0 is false
-   value = value & 0xC0;  // 0xC0 == 0b1100 0000
+   final int encodeMask = 0xC0;
+   final int valueMask = 0x80;
 
-   if (value == 0x80) {   // 0x80 == 0b1000 0000
+   retval = 0; //modified so 0 is false
+   value = value & encodeMask;  // 0xC0 == 0b1100 0000
+
+   if (value == valueMask) {   // 0x80 == 0b1000 0000
       retval = 1; //modified so 1 is true
    }
    return retval;
