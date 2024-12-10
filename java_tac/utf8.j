@@ -49,7 +49,8 @@ if5:         if (isContinuation(v_cont) == 1){
             v_cont = v_cont & bytecontmask;
             decodedValue = decodedValue << decodedValueShift;
             decodedValue = decodedValue + v_cont;
-else5:         } else {
+            } //jump to done5
+            else {
             return -1;
          }
 done5:  ;
