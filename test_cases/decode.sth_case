@@ -8,12 +8,29 @@ INPUT="../test_cases/list_1.txt"
 OUTPUT="0x00002727"
 EXIT_STATUS=1
 
-#4 more required
+
 [case]
 INPUT="../test_cases/list_2.txt"
 OUTPUT="../test_cases/list_2.output"
 EXIT_STATUS=4
 
+#4 more required
 [case]
 INPUT="../test_cases/list_3.txt"
-EXIT_STATUS=0
+OUTPUT="../test_cases/list_3.output"
+EXIT_STATUS=1
+
+[case]
+INPUT="../test_cases/list_4.txt"
+OUTPUT="../test_cases/list_4.output"
+EXIT_STATUS=1
+
+[case]
+INPUT="../test_cases/list_5.txt"
+OUTPUT="../test_cases/list_5.output"
+EXIT_STATUS=1
+
+[case]
+INPUT="../test_cases/list_6.txt"
+OUTPUT="../test_cases/list_6.output"
+EXIT_STATUS=2
