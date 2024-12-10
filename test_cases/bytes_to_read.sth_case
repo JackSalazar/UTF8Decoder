@@ -17,7 +17,7 @@ ARGS="0xE3"
 EXIT_STATUS=3
 
 [case]
-ARGS="0xF7"
+ARGS="0xF4"
 EXIT_STATUS=4
 
 [case]

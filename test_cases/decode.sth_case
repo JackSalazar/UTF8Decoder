@@ -1,11 +1,11 @@
 [default]
 DRIVER=java_subroutine
 ENTRY=decode
-OPTIONS="-L ."
+OPTIONS="-R null -L ."
 
 [case]
 INPUT="../test_cases/list_1.txt"
-OUTPUT="2727"
+OUTPUT="0x00002727"
 EXIT_STATUS=1
 
 #4 more required

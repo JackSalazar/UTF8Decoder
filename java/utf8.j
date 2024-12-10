@@ -47,7 +47,7 @@ entireLoop:   while (i != -1){
    v_1 = mips.retval();
 
    if (v_1 == -1) {
-      System.out.println("End of program");
+      //System.out.println("End of program");
       return count;
    }
    //System.out.println("v_1 is " + v_1);
@@ -92,7 +92,7 @@ entireLoop:   while (i != -1){
 
    }
    //ystem.out.println("The decodedValue is " + decodedValue);
-   mips.print_x(decodedValue); 
+   mips.print_x(decodedValue);
    mips.print_c('\n');
    count = count + 1;
    
@@ -126,7 +126,7 @@ public static int bytes_to_read(int v){
 //
 //      - see Slide 21 from introduction-to-encodings.pdf
 	if (v >= 0x0000){
-      if (v <= 0x7F){ //(0111 1111) for  decoded it should be 0111 1111 (0x7F)
+      if (v <= 0x7F){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
          return 1;
       }
       if (v <= 0xDF){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)
@@ -136,7 +136,7 @@ public static int bytes_to_read(int v){
       if (v <=0xEF){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
          return 3;
       }
-      if (v<= 0xF7){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
+      if (v<= 0xF4){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
          return 4;
       }
    }
