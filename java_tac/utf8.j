@@ -72,20 +72,25 @@ public static int bytes_to_read(int v){
    final int maskthree = 0xEF;
    final int maskfour = 0xF4;
 
-	if (v >= 0x0000){
-      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
+if6:	if (v >= 0x0000){
+if7:      if (v <= maskone){ //(0111 1111) for  encoded it should be 0111 1111 (0x7F)
          return 1;
       }
-      if (v <= masktwo){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
+done7:  ;
+if8:      if (v <= masktwo){ // (0111 1111 1111) should be 1101 1111 1011 1111 (0xDF  BF)               
          return 2;
       }
-      if (v <=maskthree){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
+done8:  ;
+if9:      if (v <=maskthree){ // (1111 1111 1111 1111) should be 1110 1111 1011 1111 1011 1111 (0xEF BF BF)
          return 3;
       }
-      if (v<= maskfour){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
+done9:  ;
+if10:      if (v<= maskfour){ // (0001 0000 1111 1111 1111 1111) should be 1111 0111 1011 1111 1011 1111 1011 1111 (0xF7 10 BF BF BF)
          return 4;
       }
+done10:  ;
    }
+done6:  ;
    return -1; 
 }
 
@@ -100,8 +105,9 @@ public static int isContinuation(int value) {
    retval = 0; //modified so 0 is false
    value = value & encodeMask;  // 0xC0 == 0b1100 0000
 
-   if (value == valueMask) {   // 0x80 == 0b1000 0000
+if11:   if (value == valueMask) {   // 0x80 == 0b1000 0000
       retval = 1; //modified so 1 is true
    }
+done11:  ;
    return retval;
 }
