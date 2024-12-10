@@ -1,77 +1,76 @@
 
-public static int decode(){
+                     public static int decode(){
 
-   int count ;
-   int i ;
-   int bytes2read;
-   int v_1;
-   int decodedValue;
-   int j;
-   int v_cont;
-
-   count = 0;
-   i = 0;
-   bytes2read = 0;
-
-   final int byte2mask = 0x1F;
-   final int byte3mask = 0x0F;
-   final int byte4mask = 0x07;
-   final int bytecontmask = 0x3F;
-   final int decodedValueShift = 6;
-   final int negOne = -1;
-
-nextUTFDecode:   while (true){
-
-   
-      mips.read_x();
-      v_1 = mips.retval();
-   
-if1:      if (v_1 == negOne) {
-         return count;
-      }
-done1: ;      
-      bytes2read = bytes_to_read(v_1); //checks number of bytes to read
-   
-if2:      if (bytes2read == 2){
-         v_1 = v_1 & byte2mask;
-      } 
-done2:  ;
-if3:      if (bytes2read == 3){
-         v_1 = v_1 & byte3mask;
-      }
-done3:  ;
-if4:      if (bytes2read == 4){
-         v_1 = v_1 & byte4mask;
-      }
-done4:  ;
-      //At this point, v_1 has been decoded
-   
-    decodedValue = v_1;
-    j = 1;
-
-nextContBitDecode:      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
-         mips.read_x();
-         v_cont = mips.retval();
-if5:         if (isContinuation(v_cont) == 1){
-            v_cont = v_cont & bytecontmask;
-            decodedValue = decodedValue << decodedValueShift;
-            decodedValue = decodedValue + v_cont;
-            } //jump to done5
-            else {
-            return -1;
-         }
-done5:  ;
-next1:   ; 
-      j++;
-      } //jump
-      
-      mips.print_x(decodedValue);
-      mips.print_c('\n');
-      count = count + 1;
-next2:  ;
-      i++;
-   }
-}
+                        int count ;
+                        int i ;
+                        int bytes2read;
+                        int v_1;
+                        int decodedValue;
+                        int j;
+                        int v_cont;
+                     
+                        count = 0;
+                        i = 0;
+                        bytes2read = 0;
+                     
+                        final int byte2mask = 0x1F;
+                        final int byte3mask = 0x0F;
+                        final int byte4mask = 0x07;
+                        final int bytecontmask = 0x3F;
+                        final int decodedValueShift = 6;
+                        final int negOne = -1;
+                        
+nextUTFDecode:          while (true){
+                        
+            
+                           mips.read_x();
+                           v_1 = mips.retval();
+                        
+if1:                       if (v_1 == negOne) {
+                              return count;
+                           }
+done1:                     ;      
+                           bytes2read = bytes_to_read(v_1); //checks number of bytes to read
+                        
+if2:                       if (bytes2read == 2){
+                              v_1 = v_1 & byte2mask;
+                           } 
+done2:                     ;
+if3:                       if (bytes2read == 3){
+                              v_1 = v_1 & byte3mask;
+                           }
+done3:                     ;
+if4:                       if (bytes2read == 4){
+                              v_1 = v_1 & byte4mask;
+                           }
+done4:                     ;
+                           //At this point, v_1 has been decoded
+                     
+                           decodedValue = v_1;
+                           j = 1;
+nextContBitDecode:         for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
+                              mips.read_x();
+                              v_cont = mips.retval();
+if5:                          if (isContinuation(v_cont) == 1){
+                                 v_cont = v_cont & bytecontmask;
+                                 decodedValue = decodedValue << decodedValueShift;
+                                 decodedValue = decodedValue + v_cont;
+                                 } //jump to done5
+                                 else {
+                                 return -1;
+                              }
+done5:                     ;
+next1:                     ; 
+                           j++;
+                           } //jump
+                                 
+                           mips.print_x(decodedValue);
+                           mips.print_c('\n');
+                           count = count + 1;
+next2:                       ;
+                           i++;
+                        }
+                     }
 
 public static int bytes_to_read(int v){
    final int maskone = 0x7F;
