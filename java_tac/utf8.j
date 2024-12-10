@@ -19,7 +19,7 @@ public static int decode(){
       mips.read_x();
       v_1 = mips.retval();
    
-      if (v_1 == negOne ) {
+      if (v_1 == negOne) {
          return count;
       }
       
@@ -37,8 +37,9 @@ public static int decode(){
       //At this point, v_1 has been decoded
    
       int decodedValue = v_1;
-   
-      for (int j = 1; j < bytes2read; j++){ //The plan is to just add to decodedValue as time goes on, allowing for looping
+      int j = 1;
+
+      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
          mips.read_x();
          int v_cont = mips.retval();
          if (isContinuation(v_cont) == 1){
@@ -48,7 +49,8 @@ public static int decode(){
          } else {
             return -1;
          }
-   
+      
+      j++;
       }
       mips.print_x(decodedValue);
       mips.print_c('\n');
