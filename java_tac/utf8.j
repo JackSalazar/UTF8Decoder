@@ -10,6 +10,7 @@ public static int decode(){
    final int byte4mask = 0x07;
    final int bytecontmask = 0x3F;
    final int decodedValueShift = 6;
+   final int negOne = -1;
 
    while (true){
       int bytes2read = 0;
@@ -18,7 +19,7 @@ public static int decode(){
       mips.read_x();
       v_1 = mips.retval();
    
-      if (v_1 == -1) {
+      if (v_1 == negOne ) {
          return count;
       }
       
