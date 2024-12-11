@@ -5,6 +5,7 @@
 .include "include/stack.s"
 .include "include/syscalls.s"
 .include "include/subroutine.s"
+.include "include/io.s"
 
 
                                     #
@@ -28,20 +29,22 @@ decode:                                    #public static int decode(){
                                     #
          move $t1, $zero                           #   count = 0;
          move $t2, $zero                          #   i = 0;
-         move $3, $zero                           #   bytes2read = 0;
+         move $t3, $zero                           #   bytes2read = 0;
                                     #
          .eqv byte2mask, 0x1F                           #   final int byte2mask = 0x1F;
          .eqv byte3mask, 0x0F                           #   final int byte3mask = 0x0F;
          .eqv byte4mask, 0x07                           #   final int byte4mask = 0x07;
          .eqv bytecontmask, 0x3F                           #   final int bytecontmask = 0x3F;
          .eqv decodedValueShift, 6                           #   final int decodedValueShift = 6;
-         .eqv negOne, 255                         #   final int negOne = -1;
+         .eqv negOne, -1                         #   final int negOne = -1;
+         .eqv newLine, 10
                                     #   
 nextUTFDecode: nop                     #   while (true){
                                     #   
                                     #   
-         read_x()                           #      mips.read_x(); CHECK HOW TO DO THESE LINES LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
-         move $t4, retval()                           #      v_1 = mips.retval();
+         read_x                           #      mips.read_x(); CHECK HOW TO DO THESE LINES LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+         #retval                           #      v_1 = mips.retval();
+         move $t4, $v0
                                     #   
 if1:     bne $t4, negOne, done1                           #      if (v_1 == negOne) {
             move $v0, $t1                        #         return count;
@@ -68,28 +71,39 @@ done4:                              #      ;
          li $t6, 1                           #      j = 1;
                                     #
 nextContBitDecode:   bge $t6, $t3, nextContBitDecodeDone               #      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
-                                    #         mips.read_x();
-                                    #         v_cont = mips.retval();
-if5:                                #         if (isContinuation(v_cont) == 1){
-                                    #            v_cont = v_cont & bytecontmask;
-                                    #            decodedValue = decodedValue << decodedValueShift;
-                                    #            decodedValue = decodedValue + v_cont;
+         read_x                           #         mips.read_x(); CHECK HOW TO DO THESE LINES LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+         #call retval                           #         v_cont = mips.retval();
+         move $t7 $v0
+
+         call isContinuation $t7
+if5:     bne $v0, 1, else5                           #         if (isContinuation(v_cont) == 1){
+            and $t7, $t7, bytecontmask                        #            v_cont = v_cont & bytecontmask;
+            sll $t5, $t5, decodedValueShift                        #            decodedValue = decodedValue << decodedValueShift;
+            add $t5, $t5, $t7                        #            decodedValue = decodedValue + v_cont;
+            j done5
                                     #            } //jump to done5
-                                    #            else {
-                                    #            return -1;
+else5:                                    #            else {
+            li $v0, negOne                        #            return -1;
                                     #         }
 done5:                              #      ;
 next1:                              #      ; 
-                                    #      j++;
+            addi $t6, $t6, 1                        #      j++;
 
-                     j nextContBitDecode
+            j nextContBitDecode
                                     #      } //jump
 nextContBitDecodeDone:                                    #            
-                                    #      mips.print_x(decodedValue);
-                                    #      mips.print_c('\n');
-                                    #      count = count + 1;
+            print_x $t5                        #      mips.print_x(decodedValue); CHECK HOW TO DO THESE LINES LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+            
+
+
+
+            li $v0, 11            #print_ci 10                       #      mips.print_c('\n');
+            li $a0, '\n'
+            syscall
+
+            addi $t1, $t1, 1                        #      count = count + 1;
 next2:                              #        ;
-                                    #      i++;
+            addi $t2, $t2, 1                        #      i++;
                      j nextUTFDecode
                                     #   }
                                     #}
