@@ -35,38 +35,39 @@ decode:                                    #public static int decode(){
          .eqv byte4mask, 0x07                           #   final int byte4mask = 0x07;
          .eqv bytecontmask, 0x3F                           #   final int bytecontmask = 0x3F;
          .eqv decodedValueShift, 6                           #   final int decodedValueShift = 6;
-         #.eqv                           #   final int negOne = -1;
+         .eqv negOne, 255                         #   final int negOne = -1;
                                     #   
-nextUTFDecode:                      #   while (true){
+nextUTFDecode: nop                     #   while (true){
                                     #   
                                     #   
-                                    #      mips.read_x();
-                                    #      v_1 = mips.retval();
+         read_x()                           #      mips.read_x(); CHECK HOW TO DO THESE LINES LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+         move $t4, retval()                           #      v_1 = mips.retval();
                                     #   
-if1:                                #      if (v_1 == negOne) {
-                                    #         return count;
+if1:     bne $t4, negOne, done1                           #      if (v_1 == negOne) {
+            move $v0, $t1                        #         return count;
+            jr $ra
                                     #      }
 done1:                              #      ;      
-                                    #      bytes2read = bytes_to_read(v_1); //checks number of bytes to read
-                                    #   
-if2:                                #      if (bytes2read == 2){
-                                    #         v_1 = v_1 & byte2mask;
+         call bytes_to_read $t4                           #      bytes2read = bytes_to_read(v_1); //checks number of bytes to read
+         move $t3, $v0                           #   
+if2:     bne $t3, 2, done2                           #      if (bytes2read == 2){
+            and $t4, $t4, byte2mask                        #         v_1 = v_1 & byte2mask;
                                     #      } 
 done2:                              #      ;
-if3:                                #      if (bytes2read == 3){
-                                    #         v_1 = v_1 & byte3mask;
+if3:     bne $t3, 3, done3                            #      if (bytes2read == 3){
+            and $t4, $t4, byte3mask                        #         v_1 = v_1 & byte3mask;
                                     #      }
 done3:                              #      ;
-if4:                                #      if (bytes2read == 4){
-                                    #         v_1 = v_1 & byte4mask;
+if4:     bne $t3, 4, done4                           #      if (bytes2read == 4){
+            and $t4, $t4, byte4mask                        #         v_1 = v_1 & byte4mask;
                                     #      }
 done4:                              #      ;
                                     #      //At this point, v_1 has been decoded
                                     #   
-                                    #      decodedValue = v_1;
-                                    #      j = 1;
+         move $t5, $t4                           #      decodedValue = v_1;
+         li $t6, 1                           #      j = 1;
                                     #
-nextContBitDecode:                  #      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
+nextContBitDecode:   bge $t6, $t3, nextContBitDecodeDone               #      for (;j < bytes2read;){ //The plan is to just add to decodedValue as time goes on, allowing for looping
                                     #         mips.read_x();
                                     #         v_cont = mips.retval();
 if5:                                #         if (isContinuation(v_cont) == 1){
@@ -80,13 +81,16 @@ if5:                                #         if (isContinuation(v_cont) == 1){
 done5:                              #      ;
 next1:                              #      ; 
                                     #      j++;
+
+                     j nextContBitDecode
                                     #      } //jump
-                                    #            
+nextContBitDecodeDone:                                    #            
                                     #      mips.print_x(decodedValue);
                                     #      mips.print_c('\n');
                                     #      count = count + 1;
 next2:                              #        ;
                                     #      i++;
+                     j nextUTFDecode
                                     #   }
                                     #}
 
@@ -121,7 +125,7 @@ if10:       bgt $a0, maskFour, done10               #      if (v<= maskfour){ //
 done10:     nop               #         ;
                            #   }
 done6:   nop                  #   ;
-         li $v0, -1               #   return -1; 
+         li $v0, 255               #   return -1; 
          jr $ra
                         #}
                         #
